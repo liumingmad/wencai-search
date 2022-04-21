@@ -214,7 +214,7 @@ def get_block_list(sn, out_csv):
         price = float(one['最新价'])
 
         one['如果选股下降5%'] = round(limit90 * 0.95, 3)
-        one['当天下降率'] = round((limit90-price)/limit90, 3)
+        one['当天下降率'] = str(round((limit90-price)/limit90*100, 2)) + '%'
     pd.DataFrame(columns=columns, data=data).to_csv(out_csv)
     print('Sucess to csv data count' + str(len(data)))
 
