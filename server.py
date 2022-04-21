@@ -9,16 +9,12 @@ class WCHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         req_parse = parse.urlparse(self.path)
-        print(req_parse.path)
-        print(req_parse.query)
-
         message = 'error'
         if req_parse.path == '/wencai/block':
             sn = req_parse.query.split('=')
             message = json.dumps(wc.get_block_data(sn[1]))
         elif req_parse.path == '/wencai/blocklist':
             message = wc.wc_block_list()
-
         self.send_response(200)
         self.send_header('Content-Type', 'text/plain; charset=utf-8')
         self.end_headers()

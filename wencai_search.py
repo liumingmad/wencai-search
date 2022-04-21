@@ -191,7 +191,7 @@ def get_block_data(sn, out_csv=None):
     if not sn:
         print('Error: get_block_data() sn is none')
         return
-    print('sn=' + sn)
+
     data = wc_search('获利比例', block_list=sn, page=1, perpage=100)
     
     if out_csv and os.path.exists(out_csv):
