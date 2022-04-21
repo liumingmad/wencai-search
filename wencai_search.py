@@ -55,7 +55,7 @@ def wc_block_list():
     if resp.status_code != 200:
         print('Error: status_code=' + str(resp.status_code))
         return
-    return json.loads(resp.text)['data']
+    return resp.text
 
 def wc_search(word, block_list='', page=1, perpage=10):
     url = "http://www.iwencai.com/customized/chart/get-robot-data"
@@ -187,14 +187,14 @@ def get_base_filter_list(out_csv):
 
 
 # 获取我的板块中的数据
-def get_block_list(sn, out_csv):
+def get_block_data(sn, out_csv=None):
     if not sn:
-        print('Error: get_block_list() sn is none')
+        print('Error: get_block_data() sn is none')
         return
-
+    print('sn=' + sn)
     data = wc_search('获利比例', block_list=sn, page=1, perpage=100)
     
-    if os.path.exists(out_csv):
+    if out_csv and os.path.exists(out_csv):
         os.remove(out_csv)
     limit90_col_name = '90%成本下限' + '[' + gen_date_str() + ']' 
     columns=[
@@ -215,8 +215,11 @@ def get_block_list(sn, out_csv):
 
         one['如果选股下降5%'] = round(limit90 * 0.95, 3)
         one['当天下降率'] = str(round((limit90-price)/limit90*100, 2)) + '%'
-    pd.DataFrame(columns=columns, data=data).to_csv(out_csv)
+
+    if out_csv:
+        pd.DataFrame(columns=columns, data=data).to_csv(out_csv)
     print('Sucess to csv data count' + str(len(data)))
+    return data
 
 
 def gen_base_filter_name():
@@ -247,7 +250,7 @@ def main():
 
     if '-sn' == opt:
         sn = sys.argv[2]
-        get_block_list(sn, gen_block_file_name(sn))
+        get_block_data(sn, gen_block_file_name(sn))
         return
     
     print('Error: unknow argv ' + str(sys.argv))
