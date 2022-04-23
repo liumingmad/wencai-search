@@ -1,6 +1,11 @@
-s = 'index.html1'
+import os
+import hashlib
+s = hashlib.sha1(os.urandom(24)).hexdigest()
+print(s)
 
-def is_res(path):
-    sub = path[path.rfind('.')+1:len(path)]
-    return sub in ['html', 'js', 'css']
-print(is_res(s))
+import hmac
+import base64
+val = 'cb01b64fce16b2092e30a593879c8bd192184a05'
+hashed = hmac.new('liukun'.encode("utf-8"), 'Helloworld!'.encode("utf-8"), 'sha1')
+a = hashed.hexdigest()
+print(a)

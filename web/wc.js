@@ -1,7 +1,9 @@
+PASSWORD = 'liukun'
 var block_map = new Map();
 
 
 $(function () {
+    //digest('liukun')
     getBlockList()
     addClickListener();
 });
@@ -28,6 +30,8 @@ function genBlockMap(arr) {
 function getBlockList() {
     $('.loader').css("visibility", "visible");
     var jqxhr = $.ajax('/wencai/blocklist', {
+        method: 'GET',
+        headers: genHeaders(PASSWORD),
         dataType: 'json'
 
     }).done(function (obj) {
@@ -38,10 +42,11 @@ function getBlockList() {
         addClickListener();
 
     }).fail(function (xhr, status) {
-        console.log('失败: ' + xhr.status + ', 原因: ' + status);
+        error = '失败: ' + xhr.status + ', 原因: ' + status
+        console.log(error);
+        alert(error)
 
     }).always(function () {
-        console.log('请求完成: 无论成功或失败都会调用');
         $('.loader').css("visibility", "hidden");
     });
 }
@@ -60,16 +65,34 @@ function addClickListener() {
 // http://127.0.0.1:8080/wencai/block?sn=14B
 function getBlockData(sn) {
     $('.loader').css("visibility", "visible");
-    var jqxhr = $.ajax('/wencai/block?sn='+sn)
-    .done(function (data) {
+    var jqxhr = $.ajax('/wencai/block?sn='+sn, {
+        method: 'GET',
+        headers: genHeaders(PASSWORD),
+        dataType: 'text'
+
+    }).done(function (data) {
         console.log('成功, 收到的数据: ' + data);
         $('.stock-table').html(data);
 
     }).fail(function (xhr, status) {
-        console.log('失败: ' + xhr.status + ', 原因: ' + status);
+        error = '失败: ' + xhr.status + ', 原因: ' + status
+        console.log(error);
+        alert(error)
 
     }).always(function () {
-        console.log('请求完成: 无论成功或失败都会调用');
         $('.loader').css("visibility", "hidden");
     });
+}
+
+function genHeaders(secret) {
+    headers = {
+        'token': genToken(secret)
+    };
+    return headers;
+}
+
+function genToken(secret) {
+    var s = CryptoJS.HmacSHA1('Helloworld!', secret).toString();
+    console.log(s);
+    return s;
 }

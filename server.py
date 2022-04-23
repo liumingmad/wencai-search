@@ -39,20 +39,37 @@ class WCHandler(BaseHTTPRequestHandler):
         with open(path, 'r') as f:
             self.send_wc_response(200, f.read(), self.get_content_type(path))
 
+    def check_token(self, token):
+        # import hmac
+        # import config
+        # key = config.wc_util_password.encode("utf-8")
+        # raw = 'Helloworld!'.encode("utf-8")
+        # hashed = hmac.new(key, raw, 'sha1').hexdigest()
+        return token == 'cb01b64fce16b2092e30a593879c8bd192184a05'
+
 
     def do_GET(self):
         req_parse = parse.urlparse(self.path)
+
         if self.is_res(req_parse.path):
             self.do_GET_res(req_parse.path)
+            return
 
+        if not self.check_token(self.headers.get('token')):
+            print('token error')
+            self.send_wc_response(400, 'token error', 'text/html; charset=utf-8') 
+            return
+        
         if req_parse.path == '/wencai/block':
             sn = req_parse.query.split('=')
             message = wc.get_block_data(sn[1]).to_html(classes='stock-table')
             self.send_wc_response(200, message, 'text/html; charset=utf-8') 
+            return
 
-        elif req_parse.path == '/wencai/blocklist':
+        if req_parse.path == '/wencai/blocklist':
             message = wc.wc_block_list()
             self.send_wc_response(200, message, 'application/json; charset=utf-8') 
+            return
 
 
     def do_POST(self):
