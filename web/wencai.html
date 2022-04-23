@@ -17,11 +17,13 @@
         </div>
 
         <div class="login">
-            <div>请输入token:</div> 
-            <input id="password" type="text" name="token">
+            请输入密码:  <input id="password" type="text" name="token">
             <button id="login_btn" onclick="onClickLoginBtn()">登陆</button>
             <div id="login_status">登陆失败</div>
         </div>
+
+        <button class="base_filter" onclick="onClickDownloadCSV()">生成基本的条件过滤的数据</button>
+        <a id="download_csv" href="../tmp/tmp.csv">../tmp/tmp.csv</a>
 
         <div class="main">
             <div class="left">
@@ -56,14 +58,6 @@
                     <tr>
                         <th>Header 1</th>
                         <th>Header 2</th>
-                    </tr>
-                    <tr>
-                        <td>kkkk</td>
-                        <td>row 1, cell 2</td>
-                    </tr>
-                    <tr>
-                        <td>row 2, cell 1</td>
-                        <td>row 2, cell 2</td>
                     </tr>
                 </table>
             </div>

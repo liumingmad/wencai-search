@@ -157,7 +157,7 @@ def send_email(merge_csv):
         print("Error: 无法发送邮件")
 
 
-def get_base_filter_list(out_csv):
+def get_base_filter_list(out_csv, send_email=False):
     if os.path.exists(out_csv):
         os.remove(out_csv)
 
@@ -183,8 +183,10 @@ def get_base_filter_list(out_csv):
             break
     print('total:' + str(count))
 
-    send_email(out_csv)
+    if send_email:
+        send_email(out_csv)
 
+    return out_csv
 
 # 获取我的板块中的数据
 def get_block_data(sn, out_csv=None):

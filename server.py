@@ -13,7 +13,7 @@ import config
 class WCHandler(BaseHTTPRequestHandler):
     def is_res(self, path):
         sub = path[path.rfind('.')+1:len(path)]
-        return sub in ['html', 'js', 'css', 'ico']
+        return sub in ['html', 'js', 'css', 'ico', 'csv']
 
     def get_content_type(self, path):
         content_type = 'text/html; charset=utf-8'  
@@ -24,6 +24,8 @@ class WCHandler(BaseHTTPRequestHandler):
             content_type = 'text/javascript; charset=utf-8' 
         elif sub == 'css':
             content_type = 'text/css; charset=utf-8' 
+        elif sub == 'csv':
+            content_type = 'text/csv; charset=utf-8' 
         return content_type
 
     def send_wc_response(self, code, message, content_type):
@@ -75,6 +77,12 @@ class WCHandler(BaseHTTPRequestHandler):
         if req_parse.path == '/wencai/blocklist':
             message = wc.wc_block_list()
             self.send_wc_response(200, message, 'application/json; charset=utf-8') 
+            return
+        
+        if req_parse.path == '/wencai/basefilter':
+            import time
+            message = wc.get_base_filter_list('./tmp/tmp.csv')
+            self.send_wc_response(200, message, 'text/plain; charset=utf-8') 
             return
 
 

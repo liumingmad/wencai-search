@@ -10,16 +10,38 @@ $(function () {
     goMainPage();
 });
 
+function onClickDownloadCSV() {
+    $('.loader').css("visibility", "visible");
+    $.ajax('/wencai/basefilter', {
+        method: 'GET',
+        headers: {
+            'token': localStorage.getItem('token')
+        },
+        dataType: 'text'
+
+    }).done(function (data) {
+        console.log('成功, 收到的数据: ' + data);
+        var a = $('#download_csv');
+        a.css('visibility', 'visible');
+
+    }).fail(function (xhr, status) {
+        console.log('失败 ' + status);
+        alert("生成失败")
+
+    }).always(function () {
+        $('.loader').css("visibility", "hidden");
+    }); 
+}
+
 function goLoginPage() {
     switchUI('login');
-    $('#login_status').css("visibility", "visible");
+    $('#login_status').css("visibility", "hidden");
 }
 
 function goMainPage() {
     switchUI('main');
-    getBlockList()
+    getBlockList();
     addClickListener();
-    $('#login_status').css("visibility", "hidden");
 }
 
 function onClickLoginBtn() {
@@ -27,12 +49,12 @@ function onClickLoginBtn() {
 }
 
 function switchUI(tab) {
-    $('.login').css("visibility", "hidden");
+    $('.login').addClass('login_hidden')
     $('.main').css("visibility", "hidden");
     if (tab == 'main') {
         $('.main').css("visibility", "visible");
     } else {
-        $('.login').css("visibility", "visible");
+        $('.login').removeClass('login_hidden');
     }
 }
 
@@ -51,6 +73,7 @@ function login(info) {
 
     }).fail(function (xhr, status) {
         goLoginPage();
+        $('#login_status').css("visibility", "visible");
         console.log('登陆失败 ' + status);
 
     }).always(function () {

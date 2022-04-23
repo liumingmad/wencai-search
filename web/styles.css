@@ -1,5 +1,28 @@
+body {
+}
+
 .head h1 {
     text-align: center;
+}
+
+.login {
+    background: #efefef;
+    text-align:center;
+    padding-top: 20px;
+}
+
+.login_hidden {
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.base_filter {
+    margin: 20px 20px 20px 20px;
+}
+
+#download_csv {
+    visibility: hidden;
 }
 
 .main {
