@@ -1,26 +1,3 @@
-.head h1 {
-    text-align: center;
-}
-
-.main {
-    display: grid;
-    grid-template-columns: 1fr 4fr;
-}
-
-.left {
-    background: #bfbfbf;
-}
-
-.right {
-    background: #efefef;
-    margin-left: 10px;
-}
-
-#block_list li {
-    background: #bfbfbf;
-    margin-bottom: 20px;
-}
-
 /** Table 表格样式 **/
 .stock-table {
     border-collapse: collapse;
@@ -54,4 +31,3 @@
 .stock-table tr:nth-child(even){
     background-color: #f8f8f8 !important;
 }
-

@@ -216,10 +216,11 @@ def get_block_data(sn, out_csv=None):
         one['如果选股下降5%'] = round(limit90 * 0.95, 3)
         one['当天下降率'] = str(round((limit90-price)/limit90*100, 2)) + '%'
 
+    df = pd.DataFrame(columns=columns, data=data)
     if out_csv:
-        pd.DataFrame(columns=columns, data=data).to_csv(out_csv)
+        df.to_csv(out_csv)
     print('Sucess to csv data count' + str(len(data)))
-    return data
+    return df
 
 
 def gen_base_filter_name():

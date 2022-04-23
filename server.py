@@ -1,25 +1,59 @@
+# -*- coding: UTF-8 -*-
+
 from http.server import BaseHTTPRequestHandler
 from urllib import parse
 import cgi
 import io
 import wencai_search as wc
 import json
+import os
 
 class WCHandler(BaseHTTPRequestHandler):
+    def is_res(self, path):
+        sub = path[path.rfind('.')+1:len(path)]
+        return sub in ['html', 'js', 'css']
+
+    def get_content_type(self, path):
+        content_type = 'text/html; charset=utf-8'  
+        sub = path[path.rfind('.')+1:len(path)]
+        if sub == 'html':
+            content_type = 'text/html; charset=utf-8' 
+        elif sub == 'js':
+            content_type = 'text/javascript; charset=utf-8' 
+        elif sub == 'css':
+            content_type = 'text/css; charset=utf-8' 
+        return content_type
+
+    def send_wc_response(self, code, message, content_type):
+        self.send_response(code)
+        self.send_header('Content-Type', content_type)
+        self.end_headers()
+        self.wfile.write(message.encode('utf-8'))
+
+
+    def do_GET_res(self, path):
+        path = path[1:len(path)]
+        if not os.path.exists(path):
+            self.send_wc_response(404, '404 error', self.get_content_type(path))
+            return
+        with open(path, 'r') as f:
+            self.send_wc_response(200, f.read(), self.get_content_type(path))
+
 
     def do_GET(self):
         req_parse = parse.urlparse(self.path)
-        message = 'error'
+        if self.is_res(req_parse.path):
+            self.do_GET_res(req_parse.path)
+
         if req_parse.path == '/wencai/block':
             sn = req_parse.query.split('=')
-            message = json.dumps(wc.get_block_data(sn[1]))
+            message = wc.get_block_data(sn[1]).to_html(classes='stock-table')
+            self.send_wc_response(200, message, 'text/html; charset=utf-8') 
+
         elif req_parse.path == '/wencai/blocklist':
             message = wc.wc_block_list()
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/plain; charset=utf-8')
-        self.end_headers()
-        self.wfile.write(message.encode('utf-8'))
-    
+            self.send_wc_response(200, message, 'application/json; charset=utf-8') 
+
 
     def do_POST(self):
         # 分析提交的表单数据

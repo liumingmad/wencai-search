@@ -1,21 +1,63 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
         <title>问财辅助工具</title>
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="loading.css">
+        <link rel="stylesheet" href="table.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="wc.js"></script>
     </head>
 
     <body>
-        <div>
-            <ul id="block_list">
-                <li>Coffee</li>
-                <li>Milk</li>
-            </ul>
+        <div class="head">
+            <h1>问财辅助工具</h1>
         </div>
-        <div>
+        <div class="main">
+            <div class="left">
+                <ul id="block_list">
+                    <li>Coffee</li>
+                    <li>Milk</li>
+                </ul>
+            </div>
+            <div class="right">
 
+                <div class="loader">
+                    <div class="loader-inner">
+                        <div class="loader-line-wrap">
+                            <div class="loader-line"></div>
+                        </div>
+                        <div class="loader-line-wrap">
+                            <div class="loader-line"></div>
+                        </div>
+                        <div class="loader-line-wrap">
+                            <div class="loader-line"></div>
+                        </div>
+                        <div class="loader-line-wrap">
+                            <div class="loader-line"></div>
+                        </div>
+                        <div class="loader-line-wrap">
+                            <div class="loader-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="stock-table">
+                    <tr>
+                        <th>Header 1</th>
+                        <th>Header 2</th>
+                    </tr>
+                    <tr>
+                        <td>kkkk</td>
+                        <td>row 1, cell 2</td>
+                    </tr>
+                    <tr>
+                        <td>row 2, cell 1</td>
+                        <td>row 2, cell 2</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </body>
 </html>
