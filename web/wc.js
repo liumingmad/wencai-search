@@ -1,26 +1,29 @@
-TOKEN = ''
 var block_map = new Map();
 
-
 $(function () {
-    initUI();
-    //getBlockList()
-    //addClickListener();
+    var token = localStorage.getItem('token');
+    console.log(token);
+    if (!token) {
+        goLoginPage();
+        return;
+    }
+    goMainPage();
 });
+
+function goLoginPage() {
+    switchUI('login');
+    $('#login_status').css("visibility", "visible");
+}
+
+function goMainPage() {
+    switchUI('main');
+    getBlockList()
+    addClickListener();
+    $('#login_status').css("visibility", "hidden");
+}
 
 function onClickLoginBtn() {
     login($('#password').val());
-    // save to local
-}
-
-function initUI() {
-    var token = window.localStorage.getItem('token');
-    console.log(token);
-    if (token) {
-        switchUI('main');
-    } else {
-        switchUI('login');
-    }
 }
 
 function switchUI(tab) {
@@ -34,21 +37,21 @@ function switchUI(tab) {
 }
 
 function login(info) {
-    $.ajax('/wencai/login?token=' + genToken(info), {
+    var sec = CryptoJS.HmacSHA1('Helloworld!', info).toString();
+    $.ajax('/wencai/login?token=' + sec, {
         method: 'GET',
         dataType: 'text'
 
     }).done(function (data) {
         console.log('成功, 收到的数据: ' + data);
         if (data.length > 0) {
-            TOKEN = data;
+            localStorage.setItem("token", data);
         }
-        switchUI('main');
+        goMainPage();
 
     }).fail(function (xhr, status) {
-        switchUI('login');
-        console.log(error);
-        alert('登陆失败')
+        goLoginPage();
+        console.log('登陆失败 ' + status);
 
     }).always(function () {
     });
@@ -72,12 +75,13 @@ function genBlockMap(arr) {
     return map;
 }
 
-// http://127.0.0.1:8080/wencai/blocklist
 function getBlockList() {
     $('.loader').css("visibility", "visible");
     var jqxhr = $.ajax('/wencai/blocklist', {
         method: 'GET',
-        headers: genHeaders(),
+        headers: {
+            'token': localStorage.getItem('token')
+        },
         dataType: 'json'
 
     }).done(function (obj) {
@@ -108,12 +112,13 @@ function addClickListener() {
     }
 }
 
-// http://127.0.0.1:8080/wencai/block?sn=14B
 function getBlockData(sn) {
     $('.loader').css("visibility", "visible");
     var jqxhr = $.ajax('/wencai/block?sn='+sn, {
         method: 'GET',
-        headers: genHeaders(),
+        headers: {
+            'token': localStorage.getItem('token')
+        },
         dataType: 'text'
 
     }).done(function (data) {
@@ -130,15 +135,3 @@ function getBlockData(sn) {
     });
 }
 
-function genHeaders() {
-    headers = {
-        'token': TOKEN
-    };
-    return headers;
-}
-
-function genToken(secret) {
-    var s = CryptoJS.HmacSHA1('Helloworld!', secret).toString();
-    console.log(s);
-    return s;
-}
