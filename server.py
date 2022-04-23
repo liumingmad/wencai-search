@@ -7,11 +7,13 @@ import io
 import wencai_search as wc
 import json
 import os
+import token_util
+import config
 
 class WCHandler(BaseHTTPRequestHandler):
     def is_res(self, path):
         sub = path[path.rfind('.')+1:len(path)]
-        return sub in ['html', 'js', 'css']
+        return sub in ['html', 'js', 'css', 'ico']
 
     def get_content_type(self, path):
         content_type = 'text/html; charset=utf-8'  
@@ -39,23 +41,27 @@ class WCHandler(BaseHTTPRequestHandler):
         with open(path, 'r') as f:
             self.send_wc_response(200, f.read(), self.get_content_type(path))
 
-    def check_token(self, token):
-        # import hmac
-        # import config
-        # key = config.wc_util_password.encode("utf-8")
-        # raw = 'Helloworld!'.encode("utf-8")
-        # hashed = hmac.new(key, raw, 'sha1').hexdigest()
-        return token == 'cb01b64fce16b2092e30a593879c8bd192184a05'
-
 
     def do_GET(self):
         req_parse = parse.urlparse(self.path)
+        print(req_parse.path)
 
         if self.is_res(req_parse.path):
             self.do_GET_res(req_parse.path)
             return
+        
+        if req_parse.path == '/wencai/login':
+            arr = req_parse.query.split('=')
+            message = ''
+            if arr[1] == config.login_info:
+                message = token_util.generate_token(config.wc_util_password) 
+                self.send_wc_response(200, message, 'text/plain; charset=utf-8') 
+            else:
+                self.send_wc_response(400, 'login error', 'text/plain; charset=utf-8') 
 
-        if not self.check_token(self.headers.get('token')):
+            return
+
+        if not token_util.certify_token(config.wc_util_password, self.headers.get('token')):
             print('token error')
             self.send_wc_response(400, 'token error', 'text/html; charset=utf-8') 
             return

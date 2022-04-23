@@ -1,12 +1,58 @@
-PASSWORD = 'liukun'
+TOKEN = ''
 var block_map = new Map();
 
 
 $(function () {
-    //digest('liukun')
-    getBlockList()
-    addClickListener();
+    initUI();
+    //getBlockList()
+    //addClickListener();
 });
+
+function onClickLoginBtn() {
+    login($('#password').val());
+    // save to local
+}
+
+function initUI() {
+    var token = window.localStorage.getItem('token');
+    console.log(token);
+    if (token) {
+        switchUI('main');
+    } else {
+        switchUI('login');
+    }
+}
+
+function switchUI(tab) {
+    $('.login').css("visibility", "hidden");
+    $('.main').css("visibility", "hidden");
+    if (tab == 'main') {
+        $('.main').css("visibility", "visible");
+    } else {
+        $('.login').css("visibility", "visible");
+    }
+}
+
+function login(info) {
+    $.ajax('/wencai/login?token=' + genToken(info), {
+        method: 'GET',
+        dataType: 'text'
+
+    }).done(function (data) {
+        console.log('成功, 收到的数据: ' + data);
+        if (data.length > 0) {
+            TOKEN = data;
+        }
+        switchUI('main');
+
+    }).fail(function (xhr, status) {
+        switchUI('login');
+        console.log(error);
+        alert('登陆失败')
+
+    }).always(function () {
+    });
+}
 
 function showBlockList(arr) {
     $('#block_list li').remove();
@@ -31,7 +77,7 @@ function getBlockList() {
     $('.loader').css("visibility", "visible");
     var jqxhr = $.ajax('/wencai/blocklist', {
         method: 'GET',
-        headers: genHeaders(PASSWORD),
+        headers: genHeaders(),
         dataType: 'json'
 
     }).done(function (obj) {
@@ -67,7 +113,7 @@ function getBlockData(sn) {
     $('.loader').css("visibility", "visible");
     var jqxhr = $.ajax('/wencai/block?sn='+sn, {
         method: 'GET',
-        headers: genHeaders(PASSWORD),
+        headers: genHeaders(),
         dataType: 'text'
 
     }).done(function (data) {
@@ -84,9 +130,9 @@ function getBlockData(sn) {
     });
 }
 
-function genHeaders(secret) {
+function genHeaders() {
     headers = {
-        'token': genToken(secret)
+        'token': TOKEN
     };
     return headers;
 }

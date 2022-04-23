@@ -2,7 +2,7 @@ import time
 import base64
 import hmac
 
-def generate_token(key, expire=3600):
+def generate_token(key, expire=365*24*3600):
     ts_str = str(time.time() + expire)
     ts_byte = ts_str.encode("utf-8")
     sha1_tshexstr  = hmac.new(key.encode("utf-8"),ts_byte,'sha1').hexdigest() 
