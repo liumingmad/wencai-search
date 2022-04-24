@@ -115,7 +115,18 @@ def gen_out_filename():
     return 'out.csv'
 
 def gen_date_str():
-    return time.strftime("%Y%m%d", time.localtime())
+    return get_latest_trade_date().replace('-', '')
+
+# 获取过去最近一个交易日
+def get_latest_trade_date():
+    url = 'http://api.waizaowang.com/doc/getTradeDate?mtype=1&startDate={startDate}&endDate={endDate}&fields=all&export=1&token=fae13bef7f59af97a52352d34ea6336f'
+    s = time.strftime("%Y-%m-%d", time.localtime())
+    url = url.format(startDate=s, endDate=s)
+    resp = requests.get(url)
+    if resp:
+        data = json.loads(resp.text)
+        return data['data'][0]['lastdate']
+    return s
 
 def gen_email_body(bodyfile):
     body = 'Error'
@@ -235,6 +246,7 @@ def gen_block_file_name(sn):
     s = time.strftime("%Y_%m_%d", time.localtime())
     out_csv = WORK_DIR + '/block_' + sn + '_' + s + '.csv'
     return out_csv
+
 
 WORK_DIR = './work_dir'
 
