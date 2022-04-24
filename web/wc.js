@@ -21,7 +21,10 @@ function onClickDownloadCSV() {
 
     }).done(function (data) {
         console.log('成功, 收到的数据: ' + data);
+        data = '.' + data;
         var a = $('#download_csv');
+        a.attr('href', data);
+        a.text(data)
         a.css('visibility', 'visible');
 
     }).fail(function (xhr, status) {
@@ -129,15 +132,17 @@ function addClickListener() {
     for (var i=0; i<list.length; i++) {
         var one = list.get(i);
         one.onclick = function (e) {
-            var sn = block_map.get(e.target.innerText);
-            getBlockData(sn);
+            var ln = e.target.innerText;
+            var sn = block_map.get(ln);
+            getBlockData(ln, sn);
         };
     }
 }
 
-function getBlockData(sn) {
+function getBlockData(ln, sn) {
     $('.loader').css("visibility", "visible");
-    var jqxhr = $.ajax('/wencai/block?sn='+sn, {
+    url = '/wencai/block?sn=' + sn + '&ln=' + ln
+    var jqxhr = $.ajax(url, {
         method: 'GET',
         headers: {
             'token': localStorage.getItem('token')
@@ -147,6 +152,7 @@ function getBlockData(sn) {
     }).done(function (data) {
         console.log('成功, 收到的数据: ' + data);
         $('.stock-table').html(data);
+        $('#export_curr_csv').attr("href", '../tmp/block_'+ln+'.csv'); 
 
     }).fail(function (xhr, status) {
         error = '失败: ' + xhr.status + ', 原因: ' + status

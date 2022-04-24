@@ -25,6 +25,11 @@ body {
     visibility: hidden;
 }
 
+#export_curr_csv {
+    float:right;
+    margin: 20px 20px 20px 20px;
+}
+
 .main {
     display: grid;
     grid-template-columns: 1fr 4fr;

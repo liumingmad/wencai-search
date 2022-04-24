@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from http.server import BaseHTTPRequestHandler
-from urllib import parse
+import urllib
 import cgi
 import io
 import wencai_search as wc
@@ -9,6 +9,7 @@ import json
 import os
 import token_util
 import config
+import time
 
 class WCHandler(BaseHTTPRequestHandler):
     def is_res(self, path):
@@ -44,8 +45,15 @@ class WCHandler(BaseHTTPRequestHandler):
             self.send_wc_response(200, f.read(), self.get_content_type(path))
 
 
+    def gen_block_tmp_filename(self, ln):
+        return './tmp/block_{ln}.csv'.format(ln=ln)
+
+    def gen_base_filter_tmp_filename(self):
+        s = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
+        return './tmp/base_' + s + '.csv'
+
     def do_GET(self):
-        req_parse = parse.urlparse(self.path)
+        req_parse = urllib.parse.urlparse(urllib.parse.unquote(self.path))
         print(req_parse.path)
 
         if self.is_res(req_parse.path):
@@ -69,8 +77,11 @@ class WCHandler(BaseHTTPRequestHandler):
             return
         
         if req_parse.path == '/wencai/block':
-            sn = req_parse.query.split('=')
-            message = wc.get_block_data(sn[1]).to_html(classes='stock-table')
+            arr = req_parse.query.split('&')
+            sn = arr[0].split('=')[1]
+            ln = arr[1].split('=')[1]
+            out_csv = self.gen_block_tmp_filename(ln)
+            message = wc.get_block_data(sn, out_csv).to_html(classes='stock-table')
             self.send_wc_response(200, message, 'text/html; charset=utf-8') 
             return
 
@@ -80,8 +91,7 @@ class WCHandler(BaseHTTPRequestHandler):
             return
         
         if req_parse.path == '/wencai/basefilter':
-            import time
-            message = wc.get_base_filter_list('./tmp/tmp.csv')
+            message = wc.get_base_filter_list(self.gen_base_filter_tmp_filename())
             self.send_wc_response(200, message, 'text/plain; charset=utf-8') 
             return
 

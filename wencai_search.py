@@ -212,7 +212,8 @@ def get_block_data(sn, out_csv=None):
         print('Error: get_block_data() sn is none')
         return
 
-    data = wc_search('获利比例', block_list=sn, page=1, perpage=100)
+    data = wc_search('获利比例；最高价前复权；最低价前复权；', block_list=sn, page=1, perpage=100)
+    
     
     if out_csv and os.path.exists(out_csv):
         os.remove(out_csv)
@@ -223,7 +224,10 @@ def get_block_data(sn, out_csv=None):
         limit90_col_name,
         '如果选股下降5%',
         '最新价', 
-        '当天下降率']
+        '当天下降率',
+        '最高价:前复权' + '[' + gen_date_str() + ']',
+        '最低价:前复权' + '[' + gen_date_str() + ']'
+        ]
     for one in data:
         if limit90_col_name not in one:
             continue
