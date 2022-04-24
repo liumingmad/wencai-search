@@ -281,6 +281,13 @@ def main():
         get_block_data(sn, gen_block_file_name(sn))
         return
     
+    if '-allsn' == opt:
+        obj = json.loads(wc_block_list())
+        for one in obj['data']:
+            sn = one['sn']
+            get_block_data(sn, gen_block_file_name(sn))
+        return
+    
     print('Error: unknow argv ' + str(sys.argv))
 
 
