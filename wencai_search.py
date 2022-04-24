@@ -36,8 +36,8 @@ def gen_payload(word, block_list='', page=1, perpage=10):
         "secondary_intent":"stock",
         "perpage":perpage,
         "page":page,
-        "sort_key":"收盘获利" + '[' + gen_date_str() + ']',
-        "sort_order":"asc",
+        "sort_key":"最新涨跌幅",
+        "sort_order":"desc",
         "fund_class":"",
         "show_indexes":"[\"最新价\",\"最新涨跌幅\",\"90%成本下限\",\"90%成本上限\",\"平均成本\",\"集中度70\",\"集中度90\",\"收盘获利\"]",
         "source":"Ths_iwencai_Xuangu",
@@ -184,14 +184,21 @@ def get_base_filter_list(out_csv, send_email=False):
         '集中度90' + '[' + gen_date_str() + ']',
         '最新涨跌幅',
     ]
+    res = pd.DataFrame(columns=columns, data=[])
     count = 0
     for i in range(1, 10):
         data = wc_search(word, page=i, perpage=100)
-        pd.DataFrame(columns=columns, data=data).to_csv(out_csv, mode='a', header=i==1)
+        df = pd.DataFrame(columns=columns, data=data)
+        res = pd.concat([res, df], ignore_index=True)
         size = len(data)
         count = count + size
         if size<100:
             break
+    
+    long_col = '收盘获利' + '[' + gen_date_str() + ']'
+    res[long_col] = res[long_col].map('{}%'.format, na_action='ignore')
+    res['最新涨跌幅'] = res['最新涨跌幅'].map('{}%'.format, na_action='ignore')
+    res.to_csv(out_csv)
     print('total:' + str(count))
 
     if send_email:
@@ -227,9 +234,11 @@ def get_block_data(sn, out_csv=None):
         price = float(one['最新价'])
 
         one['如果选股下降5%'] = round(limit90 * 0.95, 3)
-        one['当天下降率'] = str(round((limit90-price)/limit90*100, 2)) + '%'
+        one['当天下降率'] = round((limit90-price)/limit90*100, 2)
 
     df = pd.DataFrame(columns=columns, data=data)
+    df = df.sort_values(by=['当天下降率'], ascending=[False])
+    df['当天下降率'] = df['当天下降率'].map('{}%'.format, na_action='ignore')
     if out_csv:
         df.to_csv(out_csv)
     print('Sucess to csv data count' + str(len(data)))
