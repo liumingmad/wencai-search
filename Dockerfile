@@ -3,10 +3,12 @@ MAINTAINER ming <liumingmad@gmail.com>
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# install python require
+RUN apt-get update
+RUN apt-get install -y nodejs
+
 # RUN python -m pip install --upgrade pip
 WORKDIR /work
-COPY ./requirements.txt /work
+COPY ./ /work
 RUN pip install -r requirements.txt
 
 ENTRYPOINT ["python"]
