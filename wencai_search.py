@@ -123,9 +123,13 @@ def get_latest_trade_date():
     s = time.strftime("%Y-%m-%d", time.localtime())
     url = url.format(startDate=s, endDate=s)
     resp = requests.get(url)
+    print('get_latest_trade_date=' + resp.text)
     if resp:
-        data = json.loads(resp.text)
-        return data['data'][0]['lastdate']
+        obj = json.loads(resp.text)['data'][0]
+        if obj['isopen'] == 2:
+            return obj['lastdate']
+        else:
+            return obj['tdate']
     return s
 
 def gen_email_body(bodyfile):
