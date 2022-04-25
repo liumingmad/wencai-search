@@ -138,6 +138,7 @@ class WCHandler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     from http.server import HTTPServer
-    server = HTTPServer(('0.0.0.0', 8080), WCHandler)
+    from http.server import ThreadingHTTPServer
+    server = ThreadingHTTPServer(('0.0.0.0', 8080), WCHandler)
     print('Starting server, use <Ctrl-C> to stop')
     server.serve_forever()
