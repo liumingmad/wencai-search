@@ -176,16 +176,17 @@ def get_base_filter_list(out_csv, send_email=False):
     if os.path.exists(out_csv):
         os.remove(out_csv)
 
+    date_str = gen_date_str()
     word = 'st股除外；市值大于50亿；roe>0；688开头的股票除外；上市时间大于5年；获利盘小于101%的股票；最高价前复权；最低价前复权；'
     columns=[
         '股票代码',
         '股票简称',
-        '收盘获利' + '[' + gen_date_str() + ']', 
-        '最高价:前复权' + '[' + gen_date_str() + ']',
-        '最低价:前复权' + '[' + gen_date_str() + ']',
+        '收盘获利' + '[' + date_str + ']', 
+        '最高价:前复权' + '[' + date_str + ']',
+        '最低价:前复权' + '[' + date_str + ']',
         '最新价', 
-        '90%成本下限' + '[' + gen_date_str() + ']',
-        '集中度90' + '[' + gen_date_str() + ']',
+        '90%成本下限' + '[' + date_str + ']',
+        '集中度90' + '[' + date_str + ']',
         '最新涨跌幅',
     ]
     res = pd.DataFrame(columns=columns, data=[])
@@ -199,7 +200,7 @@ def get_base_filter_list(out_csv, send_email=False):
         if size<100:
             break
     
-    long_col = '收盘获利' + '[' + gen_date_str() + ']'
+    long_col = '收盘获利' + '[' + date_str + ']'
     res[long_col] = res[long_col].map('{}%'.format, na_action='ignore')
     res['最新涨跌幅'] = res['最新涨跌幅'].map('{}%'.format, na_action='ignore')
     res.to_csv(out_csv)
@@ -221,7 +222,8 @@ def get_block_data(sn, out_csv=None):
     
     if out_csv and os.path.exists(out_csv):
         os.remove(out_csv)
-    limit90_col_name = '90%成本下限' + '[' + gen_date_str() + ']' 
+    date_str = gen_date_str()
+    limit90_col_name = '90%成本下限' + '[' + date_str + ']' 
     columns=[
         '股票代码', 
         '股票简称', 
@@ -229,8 +231,8 @@ def get_block_data(sn, out_csv=None):
         '如果选股下降5%',
         '最新价', 
         '当天下降率',
-        '最高价:前复权' + '[' + gen_date_str() + ']',
-        '最低价:前复权' + '[' + gen_date_str() + ']'
+        '最高价:前复权' + '[' + date_str + ']',
+        '最低价:前复权' + '[' + date_str + ']'
         ]
     for one in data:
         if limit90_col_name not in one:
